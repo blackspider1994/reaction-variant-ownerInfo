@@ -38,7 +38,11 @@ function myStartup(context) {
   });
 
   context.simpleSchemas.CatalogProductVariant.extend({
-    uploadedBy: OwnerInfo
+    uploadedBy: OwnerInfo,
+    productId:{
+      type: String,
+      optional: true,
+    },
 
   });
 }
@@ -49,13 +53,15 @@ function myPublishProductToCatalog(
   catalogProduct,
   { context, product, shop, variants }
 ) {
-
   catalogProduct.variants &&
     catalogProduct.variants.map((catalogVariant) => {
       const productVariant = variants.find(
         (variant) => variant._id === catalogVariant.variantId
       );
+console.log("publish product",productVariant);
+
       catalogVariant.uploadedBy = productVariant.uploadedBy || null;
+      catalogVariant.productId=productVariant["ancestors"][0]?productVariant["ancestors"][0]:null;
     });
 }
 
