@@ -12,7 +12,13 @@ const resolvers = {
       let productVariant=await getVariantsByUserId(context, parent.userId, true, args);
       return productVariant;
     }
+  },
+  ProductVariant:{
+    async ancestorId (parent, args, context, info){
+      return parent.ancestors[0];
+    }
   }
+
 };
 function myStartup(context) {
  _context=context;
@@ -34,12 +40,16 @@ function myStartup(context) {
   });
 
   context.simpleSchemas.ProductVariant.extend({
-    uploadedBy: OwnerInfo
+    uploadedBy: OwnerInfo,
+    ancestorId    :{
+      type: String,
+      optional: true,
+    },
   });
 
   context.simpleSchemas.CatalogProductVariant.extend({
     uploadedBy: OwnerInfo,
-    productId:{
+    ancestorId    :{
       type: String,
       optional: true,
     },
@@ -61,7 +71,7 @@ function myPublishProductToCatalog(
 console.log("publish product",productVariant);
 
       catalogVariant.uploadedBy = productVariant.uploadedBy || null;
-      catalogVariant.productId=productVariant["ancestors"][0]?productVariant["ancestors"][0]:null;
+      catalogVariant.ancestorId=productVariant["ancestors"][0]?productVariant["ancestors"][0]:null;
     });
 }
 

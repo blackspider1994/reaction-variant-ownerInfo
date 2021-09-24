@@ -1,5 +1,6 @@
 extend type ProductVariant {
   uploadedBy: uploadedBy
+  ancestorId:ID
   
 }
 
@@ -9,7 +10,7 @@ extend input ProductVariantInput {
 
 extend type CatalogProductVariant {
   uploadedBy: uploadedBy
-  productId:ID
+  ancestorId:ID
 
 }
 
