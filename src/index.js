@@ -7,12 +7,19 @@ const mySchema = importAsString("./schema.graphql");
 var _context = null;
 
 const resolvers = {
-  Product: {
-    async media(parent, args, context, info) {
-
-      return parent.media;
-    },
+  Account: {
+     async productVariants(parent, args, context, info) {
+       console.log("parent",parent);
+      let productVariant=await getVariantsByUserId(context, parent.userId, true, args);
+      return productVariant;
+    }
   },
+  ProductVariant:{
+    async ancestorId (parent, args, context, info){
+      return parent.ancestors[0];
+    }
+  }
+
 };
 function myStartup1(context) {
   _context = context;
@@ -52,35 +59,22 @@ function myStartup1(context) {
       optional: true,
     },
   });
-  const ImageInfo = new SimpleSchema({
-    priority: {
-      type: Number,
-      defaultValue: 0,
-    },
-    productId: {
+
+  context.simpleSchemas.ProductVariant.extend({
+    uploadedBy: OwnerInfo,
+    ancestorId    :{
       type: String,
-      label: "Product Id",
-    },
-    variantId: {
-      type: String,
-      label: "Variant Id",
-      optional: true,
-    },
-    URLs: {
-      type: ImageSizes,
       optional: true,
     },
   });
 
-  context.simpleSchemas.Product.extend({
-    media: {
-      type: Array,
-      label: "Media",
+  context.simpleSchemas.CatalogProductVariant.extend({
+    uploadedBy: OwnerInfo,
+    ancestorId    :{
+      type: String,
       optional: true,
     },
-    "media.$": {
-      type: ImageInfo,
-    },
+
   });
 }
 
@@ -90,13 +84,16 @@ function myPublishProductToCatalog(
   catalogProduct,
   { context, product, shop, variants }
 ) {
-  // catalogProduct.variants &&
-  //   catalogProduct.variants.map((catalogVariant) => {
-  //     const productVariant = variants.find(
-  //       (variant) => variant._id === catalogVariant.variantId
-  //     );
-  //     catalogVariant.uploadedBy = productVariant.uploadedBy || null;
-  //   });
+  catalogProduct.variants &&
+    catalogProduct.variants.map((catalogVariant) => {
+      const productVariant = variants.find(
+        (variant) => variant._id === catalogVariant.variantId
+      );
+console.log("publish product",productVariant);
+
+      catalogVariant.uploadedBy = productVariant.uploadedBy || null;
+      catalogVariant.ancestorId=productVariant["ancestors"][0]?productVariant["ancestors"][0]:null;
+    });
 }
 
 /**

@@ -1,8 +1,30 @@
-extend input ProductInput {
-  media: [ImageInfoInput]
+extend type ProductVariant {
+  uploadedBy: uploadedBy
+  ancestorId:ID
+  
 }
-extend type Product {
-  mediaS3: [ImageInfo]
+
+extend input ProductVariantInput {
+  uploadedBy: uploadedByinput
+}
+
+extend type CatalogProductVariant {
+  uploadedBy: uploadedBy
+  ancestorId:ID
+
+}
+
+
+type uploadedBy {
+  name:String
+  image:String
+  userId:ID
+ }
+
+input uploadedByinput {
+  name:String
+  image:String
+  userId:ID
 }
 
 input ImageInfoInput {
