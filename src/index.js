@@ -2,9 +2,10 @@ import pkg from "../package.json";
 import SimpleSchema from "simpl-schema";
 import importAsString from "@reactioncommerce/api-utils/importAsString.js";
 const mySchema = importAsString("./schema.graphql");
-import getVariantsByUserId from "./utils/getVariants.js";
+// import getMedia from "./utils/getMedia.js";
 
-var _context=null;
+var _context = null;
+
 const resolvers = {
   Account: {
      async productVariants(parent, args, context, info) {
@@ -20,21 +21,41 @@ const resolvers = {
   }
 
 };
-function myStartup(context) {
- _context=context;
-  const OwnerInfo = new SimpleSchema({
-    userId: {
+function myStartup1(context) {
+  _context = context;
+  const { app, collections, rootUrl } = context;
+  if (app.expressApp) {
+    app.expressApp.post("/uploadByURL", function (req, res, next) {
+      console.log("body",req.body)
+      // write your callback code here.
+      res.send("asdasdasds")
+    });
+  }
+
+  const ImageSizes = new SimpleSchema({
+    large: {
       type: String,
-      max: 30,
+      label: "Large",
       optional: true,
     },
-    image: {
+    medium: {
       type: String,
-      max: 20,
+      label: "Medium",
       optional: true,
     },
-    name: {
+    original: {
       type: String,
+      label: "Original",
+      optional: true,
+    },
+    small: {
+      type: String,
+      label: "Small",
+      optional: true,
+    },
+    thumbnail: {
+      type: String,
+      label: "Thumbnail",
       optional: true,
     },
   });
@@ -82,11 +103,11 @@ console.log("publish product",productVariant);
  */
 export default async function register(app) {
   await app.registerPlugin({
-    label: "Product Dimensions",
-    name: "products-dimensions",
+    label: "Image to S3",
+    name: "images-S3",
     version: pkg.version,
     functionsByType: {
-      startup: [myStartup],
+      startup: [myStartup1],
       publishProductToCatalog: [myPublishProductToCatalog],
     },
     graphQL: {
